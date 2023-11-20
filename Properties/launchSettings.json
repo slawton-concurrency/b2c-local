@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "b2c_local": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7063",
+      "launchBrowser": false
+    }
+  }
+}
