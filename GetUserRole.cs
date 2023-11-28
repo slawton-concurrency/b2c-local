@@ -7,7 +7,7 @@ public class UserRolesRequest
 {
     public string? version { get; set; }
     public int status { get; set; }
-    public string? email { get; set; }
+    public string? name { get; set; }
 }
 
 public class UserRolesResponse
@@ -15,8 +15,7 @@ public class UserRolesResponse
 
     public string? version { get; set; }
     public int status { get; set; }
-    public string? email { get; set; }
-    public string? role { get; set; }
+    public string? name { get; set; }
 }
 
 public class B2CResponseError
@@ -46,14 +45,13 @@ public static class GetUserRole
         string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
         var emailRequest = JsonConvert.DeserializeObject<UserRolesRequest>(requestBody);
 
-        if (string.IsNullOrWhiteSpace(emailRequest?.email))
+        if (string.IsNullOrWhiteSpace(emailRequest?.name))
         {
             return new UserRolesResponse
             {
                 version = "1.0.0",
                 status = 400,
-                email = emailRequest?.email,
-                role = null
+                name = null,
             };
         }
 
@@ -61,7 +59,7 @@ public static class GetUserRole
         await tableClient.CreateIfNotExistsAsync();
 
         string partitionKey = "User";
-        string rowKey = emailRequest.email;
+        string rowKey = emailRequest.name;
 
         try
         {
@@ -71,8 +69,7 @@ public static class GetUserRole
             {
                 version = "1.0.0",
                 status = 200,
-                email = emailRequest.email,
-                role = tableRes.Value.Role
+                name = tableRes.Value.Role
             };
 
         }
@@ -82,7 +79,7 @@ public static class GetUserRole
             {
                 PartitionKey = partitionKey,
                 RowKey = rowKey,
-                Role = "user"
+                Role = "Default"
             };
 
             await tableClient.AddEntityAsync(newUserRole);
@@ -91,8 +88,7 @@ public static class GetUserRole
             {
                 version = "1.0.0",
                 status = 200,
-                email = emailRequest.email,
-                role = newUserRole.Role
+                name = newUserRole.Role
             };
         }
     }

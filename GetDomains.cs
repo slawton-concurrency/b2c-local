@@ -6,6 +6,13 @@ using Newtonsoft.Json;
 
 namespace b2c_local
 {
+    public class DomainResponse
+    {
+
+        public string? version { get; set; }
+        public int status { get; set; }
+        public List<string> domains { get; set; }
+    }
     public class GetDomains
     {
         private readonly ILogger _logger;
@@ -16,17 +23,20 @@ namespace b2c_local
         }
 
         [Function("GetDomains")]
-        public HttpResponseData Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
+        public DomainResponse Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
         {
             _logger.LogInformation("C# HTTP trigger function processed a request.");
 
             List<string> domains = new List<string>() { "vmghealth.com", "concurrency.com", "gmail.com", "mailinator.com" };
 
-            // return list of domains
-            var response = req.CreateResponse(HttpStatusCode.OK);
-            response.Headers.Add("Content-Type", "application/json; charset=utf-8");
-            response.WriteString(JsonConvert.SerializeObject(domains));
-            return response;
+            DomainResponse domainResponse = new DomainResponse
+            {
+                version = "1.0.0",
+                status = 200,
+                domains = domains
+            };
+
+            return domainResponse;
         }
     }
 }
